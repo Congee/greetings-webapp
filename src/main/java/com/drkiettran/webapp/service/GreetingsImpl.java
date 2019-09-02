@@ -1,6 +1,7 @@
 package com.drkiettran.webapp.service;
 
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import javax.validation.Valid;
 
@@ -32,26 +33,28 @@ import io.swagger.annotations.ApiResponses;
 @Controller
 @RequestMapping("${com.drkiettran.webapp.service.base-path:/api/v1}")
 public class GreetingsImpl implements GreetingsAPI {
-	private static final Logger logger = LoggerFactory.getLogger(GreetingsImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(GreetingsImpl.class);
 
-	@ApiOperation(value = "", nickname = "put", notes = "", response = Message.class, tags = {})
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Message.class) })
-	@RequestMapping(value = "/greetings/sayHello", produces = { "application/json" }, consumes = {
-			"application/json" }, method = RequestMethod.PUT)
-	public ResponseEntity<Message> put(@RequestHeader HttpHeaders headers,
-			@ApiParam(value = "Simple Greetings", required = true) @Valid @RequestBody Message greetingsMessage) {
-		logger.info("***** I Received: {}", greetingsMessage);
-		Greetings greetings = new Greetings();
-		Message returnGreetingsMessage = new Message();
-		returnGreetingsMessage.setName("Webapp");
-		try {
-			returnGreetingsMessage.setMessage(greetings.hello(greetingsMessage.getName()));
-		} catch (UnknownHostException e) {
-			logger.error("ERROR: {}", e);
-		}
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.add("Content-type", "application/json");
-		logger.info("Returned: {}", returnGreetingsMessage);
-		return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).body(returnGreetingsMessage);
-	}
+    @ApiOperation(value = "", nickname = "put", notes = "", response = Message.class, tags = {})
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Message.class) })
+    @RequestMapping(value = "/greetings/sayHello", produces = { "application/json" }, consumes = {
+    "application/json" }, method = RequestMethod.PUT)
+    public ResponseEntity<Message> put(@RequestHeader HttpHeaders headers,
+            @ApiParam(value = "Simple Greetings", required = true) @Valid @RequestBody Message greetingsMessage) {
+            logger.info("***** I Received: {}", greetingsMessage);
+            Greetings greetings = new Greetings();
+            Message returnGreetingsMessage = new Message();
+            returnGreetingsMessage.setName("Webapp");
+            try {
+                returnGreetingsMessage.setMessage(greetings.hello(greetingsMessage.getName()));
+                returnGreetingsMessage.setCreatedBy(new Date());
+                returnGreetingsMessage.setSerialNumber((long) (Math.random() * 1_000_000L));
+            } catch (UnknownHostException e) {
+                logger.error("ERROR: {}", e);
+            }
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.add("Content-type", "application/json");
+            logger.info("Returned: {}", returnGreetingsMessage);
+            return ResponseEntity.status(HttpStatus.OK).headers(responseHeaders).body(returnGreetingsMessage);
+    }
 }
